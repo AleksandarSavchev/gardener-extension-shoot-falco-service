@@ -42,22 +42,6 @@ spec:
         networking.gardener.cloud/to-dns: allowed
         networking.gardener.cloud/to-public-networks: allowed
     spec:
-      {{- if gt (int .Values.replicaCount) 1 }}
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app.kubernetes.io/name
-                operator: In
-                values:
-                - gardener-extension-{{ .Values.serviceName }}
-              - key: app.kubernetes.io/instance
-                operator: In
-                values:
-                - {{ .Release.Name }}
-            topologyKey: "kubernetes.io/hostname"
-      {{- end }}
       priorityClassName: {{ .Values.extensionPriorityClassName }}
       serviceAccountName: gardener-extension-{{ .Values.serviceName }}
       containers:

@@ -113,10 +113,13 @@ func (p *FalcoProfileManager) watch() error {
 	if err != nil {
 		return err
 	}
+	p.logger.Info("Started watches for FalcoProfile custom resources #2")
+
 	for event := range watcher.ResultChan() {
 		switch event.Type {
 		case watch.Added, watch.Modified:
 			fe, err := decodeEvent(event.Object)
+			p.logger.Info("update", "name", fe.Name)
 			if err != nil {
 				p.logger.Error(err, "error decoding FalcoProfile event")
 			} else {
@@ -124,11 +127,14 @@ func (p *FalcoProfileManager) watch() error {
 			}
 		case watch.Deleted:
 			fe, err := decodeEvent(event.Object)
+			p.logger.Info("delete", "name", fe.Name)
 			if err != nil {
 				p.logger.Error(err, "error decoding FalcoProfile event")
 			} else {
 				p.deleteEvent(fe.ObjectMeta.Name)
 			}
+		default:
+			p.logger.Info("failed", event.Type)
 		}
 	}
 	return nil

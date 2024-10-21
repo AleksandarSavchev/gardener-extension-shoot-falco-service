@@ -33,15 +33,6 @@ type Falco struct {
 
 	// Renew CA certificates after this duration
 	CertificateRenewAfter *metav1.Duration
-
-	// Token lifetime
-	TokenLifetime *metav1.Duration
-
-	// Private key for token issuer
-	TokenIssuerPrivateKey string
-
-	// Event inggestor URL
-	IngestorURL string
 }
 
 type Version struct {

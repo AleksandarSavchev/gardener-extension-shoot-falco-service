@@ -67,11 +67,6 @@ func (in *Falco) DeepCopyInto(out *Falco) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
-	if in.TokenLifetime != nil {
-		in, out := &in.TokenLifetime, &out.TokenLifetime
-		*out = new(v1.Duration)
-		**out = **in
-	}
 	return
 }
 
