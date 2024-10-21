@@ -36,10 +36,9 @@ func init() {
 }
 
 type ConfigBuilder struct {
-	client      client.Client
-	config      *config.Configuration
-	tokenIssuer *secrets.TokenIssuer
-	profile     *profile.FalcoProfileManager
+	client  client.Client
+	config  *config.Configuration
+	profile *profile.FalcoProfileManager
 }
 
 type customRulesFile struct {
@@ -47,12 +46,11 @@ type customRulesFile struct {
 	Content  string `json:"content"`
 }
 
-func NewConfigBuilder(client client.Client, tokenIssuer *secrets.TokenIssuer, config *config.Configuration, profile *profile.FalcoProfileManager) *ConfigBuilder {
+func NewConfigBuilder(client client.Client, config *config.Configuration, profile *profile.FalcoProfileManager) *ConfigBuilder {
 	return &ConfigBuilder{
-		client:      client,
-		config:      config,
-		tokenIssuer: tokenIssuer,
-		profile:     profile,
+		client:  client,
+		config:  config,
+		profile: profile,
 	}
 }
 
@@ -161,16 +159,16 @@ func (c *ConfigBuilder) BuildFalcoValues(ctx context.Context, log logr.Logger, c
 
 	if falcoServiceConfig.CustomWebhook == nil || falcoServiceConfig.CustomWebhook.Enabled == nil || !*falcoServiceConfig.CustomWebhook.Enabled {
 		// Gardener managed event store
-		ingestorAddress := c.config.Falco.IngestorURL
-		// ok to generate new token on each reconcile
-		token, _ := c.tokenIssuer.IssueToken(*cluster.Shoot.Status.ClusterIdentity)
-		customHeadersMap := map[string]string{
-			"Authorization": "Bearer " + token,
-		}
-		customHeaders := serializeCustomHeaders(customHeadersMap)
+		// ingestorAddress := c.config.Falco.IngestorURL
+		// // ok to generate new token on each reconcile
+		// token, _ := c.tokenIssuer.IssueToken(*cluster.Shoot.Status.ClusterIdentity)
+		// customHeadersMap := map[string]string{
+		// 	"Authorization": "Bearer " + token,
+		// }
+		// customHeaders := serializeCustomHeaders(customHeadersMap)
 		webhook := map[string]interface{}{
-			"address":       ingestorAddress,
-			"customheaders": customHeaders,
+			"address":       "test",
+			"customheaders": "test",
 			"checkcerts":    true,
 		}
 		config := falcoChartValues["falcosidekick"].(map[string]interface{})["config"].(map[string]interface{})
@@ -366,6 +364,8 @@ func (c *ConfigBuilder) getImageForVersion(name string, version string) (string,
 	isDigest := func(tag string) bool {
 		return strings.HasPrefix(tag, "sha256:")
 	}
+	fmt.Printf("name %s; version %s", name, version)
+	fmt.Println(c.profile.GetFalcoVersions())
 	var image *profile.Image
 	if name == "falco" {
 		image = c.profile.GetFalcoImage(version)

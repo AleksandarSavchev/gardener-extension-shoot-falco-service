@@ -32,7 +32,6 @@ import (
 	apisservice "github.com/gardener/gardener-extension-shoot-falco-service/pkg/apis/service"
 	"github.com/gardener/gardener-extension-shoot-falco-service/pkg/constants"
 	"github.com/gardener/gardener-extension-shoot-falco-service/pkg/profile"
-	"github.com/gardener/gardener-extension-shoot-falco-service/pkg/secrets"
 )
 
 var (
@@ -41,9 +40,6 @@ var (
 			PriorityClassName:     stringValue("falco-test-priority-dummy-classname"),
 			CertificateLifetime:   &metav1.Duration{Duration: constants.DefaultCertificateLifetime},
 			CertificateRenewAfter: &metav1.Duration{Duration: constants.DefaultCertificateRenewAfter},
-			TokenLifetime:         &metav1.Duration{Duration: constants.DefaultTokenLifetime},
-			TokenIssuerPrivateKey: tokenIssuerPrivateKey,
-			IngestorURL:           "https://ingestor.example.com",
 		},
 	}
 	shootExtension = &service.FalcoServiceConfig{
@@ -216,9 +212,7 @@ var _ = Describe("Test value generation for helm chart", Label("falcovalues"), f
 
 	BeforeEach(func() {
 		fakeclient := crfake.NewFakeClient(rulesConfigMap)
-		tokenIssuer, err := secrets.NewTokenIssuer(tokenIssuerPrivateKey, 2)
-		Expect(err).To(BeNil())
-		configBuilder = NewConfigBuilder(fakeclient, tokenIssuer, extensionConfiguration, falcoProfileManager)
+		configBuilder = NewConfigBuilder(fakeclient, extensionConfiguration, falcoProfileManager)
 		logger, _ = glogger.NewZapLogger(glogger.InfoLevel, glogger.FormatJSON)
 	})
 
@@ -455,9 +449,7 @@ var _ = Describe("Getter for custom rules", Label("falcovalues"), func() {
 
 	BeforeEach(func() {
 		fakeclient := crfake.NewFakeClient(rulesConfigMap)
-		tokenIssuer, err := secrets.NewTokenIssuer(tokenIssuerPrivateKey, 2)
-		Expect(err).To(BeNil())
-		configBuilder = NewConfigBuilder(fakeclient, tokenIssuer, extensionConfiguration, falcoProfileManager)
+		configBuilder = NewConfigBuilder(fakeclient, extensionConfiguration, falcoProfileManager)
 		logger, _ = glogger.NewZapLogger(glogger.InfoLevel, glogger.FormatJSON)
 	})
 
@@ -474,9 +466,7 @@ var _ = Describe("Getter for Falco rules", Label("falcovalues"), func() {
 
 	BeforeEach(func() {
 		fakeclient := crfake.NewFakeClient(rulesConfigMap)
-		tokenIssuer, err := secrets.NewTokenIssuer(tokenIssuerPrivateKey, 2)
-		Expect(err).To(BeNil())
-		configBuilder = NewConfigBuilder(fakeclient, tokenIssuer, extensionConfiguration, falcoProfileManager)
+		configBuilder = NewConfigBuilder(fakeclient, extensionConfiguration, falcoProfileManager)
 	})
 
 	It("can identify falco version and rules mismatches", func(ctx SpecContext) {

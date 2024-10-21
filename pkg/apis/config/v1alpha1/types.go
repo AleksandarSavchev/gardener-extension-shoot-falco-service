@@ -36,16 +36,6 @@ type Falco struct {
 	// Renew CA certificates after this duration
 	// +optional
 	CertificateRenewAfter *metav1.Duration `json:"certificateRenewAfter,omitempty"`
-
-	// Token lifetime
-	// +optional
-	TokenLifetime *metav1.Duration `json:"tokenLifetime,omitempty"`
-
-	// Private key for token issuer
-	TokenIssuerPrivateKey string `json:"tokenIssuerPrivateKey,omitempty"`
-
-	// Ingestor URL
-	IngestorURL string `json:"ingestorURL,omitempty"`
 }
 
 type Version struct {

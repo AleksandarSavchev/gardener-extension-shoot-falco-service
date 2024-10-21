@@ -31,25 +31,18 @@ import (
 	"github.com/gardener/gardener-extension-shoot-falco-service/pkg/apis/service/validation"
 	"github.com/gardener/gardener-extension-shoot-falco-service/pkg/constants"
 	"github.com/gardener/gardener-extension-shoot-falco-service/pkg/profile"
-	"github.com/gardener/gardener-extension-shoot-falco-service/pkg/secrets"
 	"github.com/gardener/gardener-extension-shoot-falco-service/pkg/values"
 )
 
 // NewActuator returns an actuator responsible for Extension resources.
 func NewActuator(mgr manager.Manager, config config.Configuration) (extension.Actuator, error) {
-	// tokenIssuer, err := secrets.NewTokenIssuer(config.Falco.TokenIssuerPrivateKey, config.Falco.TokenLifetime)
-	tokenIssuer, err := secrets.NewTokenIssuer(config.Falco.TokenIssuerPrivateKey, 2)
-	if err != nil {
-		return nil, err
-	}
-	configBuilder := values.NewConfigBuilder(mgr.GetClient(), tokenIssuer, &config, profile.FalcoProfileManagerInstance)
+	configBuilder := values.NewConfigBuilder(mgr.GetClient(), &config, profile.FalcoProfileManagerInstance)
 	return &actuator{
 		client:        mgr.GetClient(),
 		config:        mgr.GetConfig(),
 		decoder:       serializer.NewCodecFactory(mgr.GetScheme(), serializer.EnableStrict).UniversalDecoder(),
 		serviceConfig: config,
 		configBuilder: configBuilder,
-		tokenIssuer:   tokenIssuer,
 	}, nil
 }
 
@@ -59,7 +52,6 @@ type actuator struct {
 	decoder       runtime.Decoder
 	serviceConfig config.Configuration
 	configBuilder *values.ConfigBuilder
-	tokenIssuer   *secrets.TokenIssuer
 }
 
 // Reconcile the Extension resource.
